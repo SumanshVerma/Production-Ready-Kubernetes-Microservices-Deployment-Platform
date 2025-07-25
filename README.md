@@ -93,8 +93,8 @@ To unify the access to both services (`bran` and `hodor`) under a **single domai
 
 ### Final Access URLs
 
-* **Bran**: [https://pay.famprotocol.org/bran/](https://pay1.famprotocol.org/bran/)
-* **Hodor**: [https://pay.famprotocol.org/hodor/](https://pay1.famprotocol.org/hodor/)
+* **Bran**: [https://pay.kubeprotocol.org/bran/](https://pay1.kubeprotocol.org/bran/)
+* **Hodor**: [https://pay.kubeprotocol.org/hodor/](https://pay1.kubeprotocol.org/hodor/)
 
 ---
 
@@ -106,7 +106,7 @@ The following NGINX configuration is used on the EC2 instance:
 # HTTP block (Certbot validation)
 server {
     listen 80;
-    server_name pay.famprotocol.org;
+    server_name pay.kubeprotocol.org;
 
     location /.well-known/acme-challenge/ {
         root /var/www/certbot;
@@ -136,10 +136,10 @@ server {
 # HTTPS block with SSL termination
 server {
     listen 443 ssl http2;
-    server_name pay.famprotocol.org;
+    server_name pay.kubeprotocol.org;
 
-    ssl_certificate /etc/letsencrypt/live/pay.famprotocol.org/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/pay.famprotocol.org/privkey.pem;
+    ssl_certificate /etc/letsencrypt/live/pay.kubeprotocol.org/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/pay.kubeprotocol.org/privkey.pem;
     ssl_protocols TLSv1.2 TLSv1.3;
     ssl_prefer_server_ciphers on;
 
@@ -174,10 +174,10 @@ server {
 
 ```bash
 sudo yum install certbot python3-certbot-nginx -y
-sudo certbot --nginx -d pay.famprotocol.org
+sudo certbot --nginx -d pay.kubeprotocol.org
 ```
 
-DNS record `pay.famprotocol.org` was configured in **Route 53** to point to the EC2 instance’s public IP.
+DNS record `pay.kubeprotocol.org` was configured in **Route 53** to point to the EC2 instance’s public IP.
 
 ---
 
@@ -243,8 +243,8 @@ Let me know if you'd like me to revise the document again to reflect this stream
 
 ### Accessing the Services
 
-* Bran: [https://pay.famprotocol.org/bran/](https://pay1.famprotocol.org/bran/)
-* Hodor: [https://pay.famprotocol.org/hodor/](https://pay1.famprotocol.org/hodor/)
+* Bran: [https://pay.kubeprotocol.org/bran/](https://pay1.kubeprotocol.org/bran/)
+* Hodor: [https://pay.kubeprotocol.org/hodor/](https://pay1.kubeprotocol.org/hodor/)
 
 #### Hodor Dockerfile (GoLang Service)
 
