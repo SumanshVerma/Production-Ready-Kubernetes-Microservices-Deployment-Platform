@@ -1,6 +1,6 @@
 > 🚨 **NOTE:** All AWS resources have been stopped to save costs.
 
-### FamPay SRE Assignment Documentation (Final Submission)
+### Production-Ready-Kubernetes-Microservices-Deployment-Platform
 
 ---
 
@@ -299,7 +299,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: bran
-  namespace: fampay
+  namespace: kube_test
 spec:
   replicas: 3
   selector:
@@ -338,7 +338,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: hodor
-  namespace: fampay
+  namespace: kube_test
 spec:
   replicas: 3
   selector:
@@ -374,11 +374,11 @@ apiVersion: v1
 kind: Service
 metadata:
   name: bran
-  namespace: fampay
+  namespace: kube_test
   annotations:
     service.beta.kubernetes.io/aws-load-balancer-type: "nlb"
     service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: "ip"
-    service.beta.kubernetes.io/aws-load-balancer-name: "fampay-nlb"
+    service.beta.kubernetes.io/aws-load-balancer-name: "kube_test-nlb"
     service.beta.kubernetes.io/aws-load-balancer-scheme: "internet-facing"
     service.beta.kubernetes.io/aws-load-balancer-cross-zone-load-balancing-enabled: "true"
 spec:
@@ -396,11 +396,11 @@ apiVersion: v1
 kind: Service
 metadata:
   name: hodor
-  namespace: fampay
+  namespace: kube_test
   annotations:
     service.beta.kubernetes.io/aws-load-balancer-type: "nlb"
     service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: "ip"
-    service.beta.kubernetes.io/aws-load-balancer-name: "fampay-nlb"
+    service.beta.kubernetes.io/aws-load-balancer-name: "kube_test-nlb"
     service.beta.kubernetes.io/aws-load-balancer-scheme: "internet-facing"
     service.beta.kubernetes.io/aws-load-balancer-cross-zone-load-balancing-enabled: "true"
 spec:
@@ -424,13 +424,13 @@ apiVersion: v1
 kind: Service
 metadata:
   name: external-lb
-  namespace: fampay
+  namespace: kube_test
   annotations:
     service.beta.kubernetes.io/aws-load-balancer-type: "nlb"
     service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: "ip"
-    service.beta.kubernetes.io/aws-load-balancer-name: "fampay-nlb"
+    service.beta.kubernetes.io/aws-load-balancer-name: "kube_test-nlb"
     service.beta.kubernetes.io/aws-load-balancer-scheme: "internet-facing"
-    service.beta.kubernetes.io/aws-load-balancer-id: "fampay-nlb-2a18e2dcd0259942"
+    service.beta.kubernetes.io/aws-load-balancer-id: "kube_test-nlb-2a18e2dcd0259942"
 spec:
   type: LoadBalancer
   ports:
@@ -449,7 +449,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: lb-proxy
-  namespace: fampay
+  namespace: kube_test
 spec:
   replicas: 2
   selector:
@@ -478,7 +478,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: nginx-config
-  namespace: fampay
+  namespace: kube_test
 data:
   default.conf: |
     server {
@@ -608,7 +608,7 @@ jobs:
           tags: hardddyy/bran:${{ github.sha }},hardddyy/bran:latest
       
       - name: Update kubeconfig
-        run: aws eks update-kubeconfig --name fampay-cluster --region us-west-2
+        run: aws eks update-kubeconfig --name kube_test-cluster --region us-west-2
       
       - name: Deploy to Kubernetes
         run: |
@@ -621,8 +621,8 @@ jobs:
           kubectl apply -f hodor-deployment.yaml
           
           # Wait for deployments to be ready
-          kubectl rollout status deployment/bran -n fampay
-          kubectl rollout status deployment/hodor -n fampay
+          kubectl rollout status deployment/bran -n kube_test
+          kubectl rollout status deployment/hodor -n kube_test
 ```
 
 ### Deployment Strategies
@@ -640,10 +640,10 @@ In case of deployment failures, the system supports automatic and manual rollbac
 
 ```shellscript
 # Automatic rollback is triggered if the deployment fails
-kubectl rollout status deployment/bran -n fampay
+kubectl rollout status deployment/bran -n kube_test
 
 # Manual rollback to previous version
-kubectl rollout undo deployment/bran -n fampay
+kubectl rollout undo deployment/bran -n kube_test
 ```
 
 Here’s a revised and complete version of your **Auto-scaling Strategy** section with additional details on the **Cluster Autoscaler** and **Metrics Server** for completeness and operational readiness:
@@ -665,7 +665,7 @@ apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
   name: bran-hpa
-  namespace: fampay
+  namespace: kube_test
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
@@ -685,7 +685,7 @@ apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
   name: hodor-hpa
-  namespace: fampay
+  namespace: kube_test
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
@@ -713,7 +713,7 @@ apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
   name: bran-hpa-custom
-  namespace: fampay
+  namespace: kube_test
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
@@ -741,7 +741,7 @@ The EKS cluster is provisioned using `eksctl` with node-level auto-scaling capab
 
 ```bash
 eksctl create cluster \
-  --name fampay-cluster \
+  --name kube_test-cluster \
   --region us-west-2 \
   --version 1.27 \
   --nodegroup-name standard-workers \
@@ -763,7 +763,7 @@ To enable automatic **node** scaling:
 
    helm upgrade --install cluster-autoscaler autoscaler/cluster-autoscaler \
      --namespace kube-system \
-     --set autoDiscovery.clusterName=fampay-cluster \
+     --set autoDiscovery.clusterName=kube_test-cluster \
      --set awsRegion=us-west-2 \
      --set rbac.create=true \
      --set nodeSelector."kubernetes\.io/os"=linux \
@@ -886,13 +886,13 @@ kubectl create secret generic bran-secrets \
   --from-literal=ALLOWED_HOSTS='*' \
   --from-literal=DEBUG='true' \
   --from-literal=TIME_ZONE='UTC' \
-  --namespace=fampay
+  --namespace=kube_test
 
 kubectl create secret generic hodor-secrets \
   --from-literal=HOST_ADDR='0.0.0.0:8888' \
   --from-literal=SECRET_KEY='django-insecure-8j=hrs#^z0t%#1^89isbgqeddf2_zw!#zh45rz-=h&u%ze)o3e' \
   --from-literal=ALLOWED_HOSTS='*' \
-  --namespace=fampay
+  --namespace=kube_test
 ```
 
 ### Secret Rotation Strategy
@@ -917,7 +917,7 @@ kubectl create secret generic bran-secrets \
   --from-literal=ALLOWED_HOSTS='*' \
   --from-literal=DEBUG='true' \
   --from-literal=TIME_ZONE='UTC' \
-  --namespace=fampay \
+  --namespace=kube_test \
   --dry-run=client -o yaml | kubectl apply -f -
 ```
 
@@ -925,7 +925,7 @@ kubectl create secret generic bran-secrets \
 2. Restart the affected deployments to pick up the new secrets:
 
 ```shellscript
-kubectl rollout restart deployment/bran -n fampay
+kubectl rollout restart deployment/bran -n kube_test
 ```
 
 
@@ -941,7 +941,7 @@ apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
   name: allow-bran-to-hodor
-  namespace: fampay
+  namespace: kube_test
 spec:
   podSelector:
     matchLabels:
@@ -959,7 +959,7 @@ apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
   name: allow-external-to-both
-  namespace: fampay
+  namespace: kube_test
 spec:
   podSelector:
     matchLabels: {}
@@ -1020,7 +1020,7 @@ To test the deployment:
 1. Verify that both services are running:
 
 ```shellscript
-kubectl get pods -n fampay
+kubectl get pods -n kube_test
 ```
 
 
@@ -1036,10 +1036,10 @@ curl http://ac82ac77f794a4ddb9d8a8debc2da7a5-232ba7fb52ab3ca7.elb.us-west-2.amaz
 
 ```shellscript
 # This should work (bran accessing hodor)
-kubectl exec -it $(kubectl get pod -l app=bran -n fampay -o jsonpath='{.items[0].metadata.name}') -n fampay -- curl http://hodor:8888/
+kubectl exec -it $(kubectl get pod -l app=bran -n kube_test -o jsonpath='{.items[0].metadata.name}') -n kube_test -- curl http://hodor:8888/
 
 # This should fail (hodor accessing bran)
-kubectl exec -it $(kubectl get pod -l app=hodor -n fampay -o jsonpath='{.items[0].metadata.name}') -n fampay -- curl http://bran:5000/
+kubectl exec -it $(kubectl get pod -l app=hodor -n kube_test -o jsonpath='{.items[0].metadata.name}') -n kube_test -- curl http://bran:5000/
 ```
 
 
