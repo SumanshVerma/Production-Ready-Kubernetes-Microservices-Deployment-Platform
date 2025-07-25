@@ -1,0 +1,36 @@
+# Cache directories
+.cache/
+.bash_history
+.bashrc
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Temporary files
+*.tmp
+*.log
+
+# AWS CLI installation files
+aws/dist/
+awscliv2.zip
+
+# Screenshots
+*.png
+*.jpg
+*.jpeg
+
+# Temporary directories
+tmp/
+temp/
